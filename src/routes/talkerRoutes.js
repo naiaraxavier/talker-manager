@@ -6,6 +6,7 @@ const authentication = require('../middlewares/authentication');
 const router = express.Router();
 
 const INTERNAL_SERVER_ERROR = 500;
+const HTTP_OK_STATUS = 200;
 const CREATED = 201;
 
 // 1 - Endpoint GET /talker que retorna um array com todas as pessoas palestrantes cadastradas.
@@ -47,7 +48,22 @@ router.post('/', authentication, checkFieldsTalker, async (req, res) => {
     await writeFile(allTalkers);
     res.status(CREATED).json(newTalker);
   } catch (err) {
-    res.send({ message: err.message });
+    res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+  }
+});
+
+// 6 - Endpoint PUT /talker/:id
+router.put('/:id', authentication, ckeckTalkers, checkFieldsTalker, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+    const talkers = await readFile();
+    const index = talkers.findIndex((element) => element.id === Number(id));
+    talkers[index] = { id: Number(id), name, age, talk };
+    await writeFile(talkers);
+    res.status(HTTP_OK_STATUS).json(talkers[index]);
+  } catch (err) {
+    res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
   }
 });
 
