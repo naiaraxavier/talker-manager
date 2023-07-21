@@ -1,6 +1,6 @@
 const express = require('express');
 const { readFile, writeFile } = require('../utils/helperFunctions');
-const { ckeckTalkers, checkFieldsTalker } = require('../middlewares/checkTalker');
+const { ckeckTalkers, checkFieldsTalker, checkRateQueryParams } = require('../middlewares/checkTalker');
 const authentication = require('../middlewares/authentication');
 
 const router = express.Router();
@@ -11,20 +11,18 @@ const NO_CONTENT = 204;
 const CREATED = 201;
 
 // 8 - Endpoint GET /talker/search com parãmetro de consulta q=searchTerm
+// 9 - Endpoint GET /talker/search com parãmetro de consulta rate=rateNumber
 // Ordem de rotas: rotas específicas -> rotas genéricas
-router.get('/search', authentication, async (req, res) => {
+router.get('/search', authentication, checkRateQueryParams, async (req, res) => {
   try {
-    const { q } = req.query;
-    const talkers = await readFile();
-  
-  if (q) {
-    const filteredTalkers = talkers.filter(({ name }) => name.includes(q));
-    return res.status(HTTP_OK_STATUS).json(filteredTalkers);
-  }
-  if (!q) {
-    return res.status(HTTP_OK_STATUS).json(talkers);
-  }
-  res.status(HTTP_OK_STATUS).end();
+    const { q, rate } = req.query;
+    let talkers = await readFile();
+    if (q) talkers = talkers.filter(({ name }) => name.includes(q));
+    if (rate) {
+    talkers = talkers
+      .filter(({ talk }) => talk.rate === Number(rate)); 
+    }
+    return res.json(talkers);
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
   }

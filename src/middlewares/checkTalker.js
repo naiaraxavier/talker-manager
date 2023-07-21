@@ -68,6 +68,20 @@ const checkRate = (req, res, next) => {
   next();
 };
 
+const checkRateQueryParams = (req, res, next) => {
+  const { rate } = req.query;
+  if (rate) {
+    const numberRate = Number(rate);
+    const validateRate = numberRate >= 1 && numberRate <= 5;
+    if (!Number.isInteger(numberRate) || !validateRate) {
+      return res.status(BAD_REQUEST).json({
+        message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
+      });
+    }
+  }
+  next();
+};
+
 const checkFieldsTalker = [
   checkName,
   checkAge,
@@ -79,4 +93,5 @@ const checkFieldsTalker = [
 module.exports = {
   ckeckTalkers,
   checkFieldsTalker,
+  checkRateQueryParams,
 };
