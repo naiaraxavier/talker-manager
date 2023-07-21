@@ -1,6 +1,10 @@
 const express = require('express');
 const { readFile, writeFile } = require('../utils/helperFunctions');
-const { ckeckTalkers, checkFieldsTalker, checkRateQueryParams } = require('../middlewares/checkTalker');
+const {
+  ckeckTalkers,
+  checkFieldsTalker,
+  checkRateQueryParams,
+} = require('../middlewares/checkTalker');
 const authentication = require('../middlewares/authentication');
 
 const router = express.Router();

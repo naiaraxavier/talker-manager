@@ -68,6 +68,7 @@ const checkRate = (req, res, next) => {
   next();
 };
 
+// Validação do QueryParams rate
 const checkRateQueryParams = (req, res, next) => {
   const { rate } = req.query;
   if (rate) {
