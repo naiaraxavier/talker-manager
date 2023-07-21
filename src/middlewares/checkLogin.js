@@ -1,4 +1,4 @@
-const { validateEmail } = require('../utils/helperFunctions');
+const { isValidEmail } = require('../utils/helperFunctions');
 
 const BAD_REQUEST = 400;
 const MSG_REQUIRED_EMAIL = 'O campo "email" é obrigatório';
@@ -12,7 +12,7 @@ const checkEmail = (req, res, next) => {
   const { email } = req.body;
 
   if (!email) res.status(BAD_REQUEST).json({ message: MSG_REQUIRED_EMAIL });
-  if (!validateEmail(email)) res.status(BAD_REQUEST).json({ message: MSG_INVALID_EMAIL_FORMAT });
+  if (!isValidEmail(email)) res.status(BAD_REQUEST).json({ message: MSG_INVALID_EMAIL_FORMAT });
   
   next();
 };

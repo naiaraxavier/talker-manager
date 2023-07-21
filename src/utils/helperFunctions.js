@@ -4,7 +4,7 @@ const path = require('path');
 
 const DATA_TALKER_PATH = path.resolve(__dirname, '../talker.json');
 
-// Função de leitura do JSON com o modulo fs
+// Função de leitura do JSON com o módulo fs
 const readFile = async () => {
   try {
     const results = await fs.readFile(DATA_TALKER_PATH);
@@ -16,18 +16,39 @@ const readFile = async () => {
   }
 };
 
+// Função de escrita com o módulo fs
+const writeFile = async (reqBody) => {
+  try {
+    const stringJson = JSON.stringify(reqBody);
+    await fs.writeFile(DATA_TALKER_PATH, stringJson);
+    console.log('Arquivo escrito com sucesso!');
+  } catch (err) {
+    console.error(`Erro ao escrever o arquivo: ${err.message}`);
+    return err.message;
+  }
+};
+
 // Função que gera um token aleatório de 16 caracteres
 const generateToken = () => crypto.randomBytes(8).toString('hex');
 
 // Função que valida se email está do formato esperado
-const validateEmail = (email) => {
+const isValidEmail = (email) => {
   const regex = /\S+@\S+\.\S+/;
   const isValid = regex.test(email);
   return isValid;
 };
 
+// Função que valida se a data está no formato esperado
+const isValidDate = (date) => {
+  const pattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  const isValid = pattern.test(date);
+  return isValid;
+};
+
 module.exports = {
   readFile,
+  writeFile,
   generateToken,
-  validateEmail,
+  isValidEmail,
+  isValidDate,
 };
