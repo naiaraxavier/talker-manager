@@ -4,6 +4,7 @@ const {
   ckeckTalkers,
   checkFieldsTalker,
   checkRateQueryParams,
+  checkDateQueryParams,
 } = require('../middlewares/checkTalker');
 const authentication = require('../middlewares/authentication');
 
@@ -17,15 +18,20 @@ const CREATED = 201;
 // 8 - Endpoint GET /talker/search com parãmetro de consulta q=searchTerm
 // 9 - Endpoint GET /talker/search com parãmetro de consulta rate=rateNumber
 // Ordem de rotas: rotas específicas -> rotas genéricas
-router.get('/search', authentication, checkRateQueryParams, async (req, res) => {
+router.get('/search',
+  authentication,
+  checkRateQueryParams,
+  checkDateQueryParams,
+  async (req, res) => {
   try {
-    const { q, rate } = req.query;
+    const { q, rate, date } = req.query;
     let talkers = await readFile();
     if (q) talkers = talkers.filter(({ name }) => name.includes(q));
     if (rate) {
     talkers = talkers
       .filter(({ talk }) => talk.rate === Number(rate)); 
     }
+    if (date) talkers = talkers.filter(({ talk }) => talk.watchedAt === date); 
     return res.json(talkers);
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });

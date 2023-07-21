@@ -83,6 +83,16 @@ const checkRateQueryParams = (req, res, next) => {
   next();
 };
 
+const checkDateQueryParams = (req, res, next) => {
+  const { date } = req.query;
+    if (date && !isValidDate(date)) {
+      return res.status(BAD_REQUEST).json({
+        message: 'O parâmetro "date" deve ter o formato "dd/mm/aaaa"',
+      });
+    }
+  next();
+};
+
 const checkFieldsTalker = [
   checkName,
   checkAge,
@@ -95,4 +105,5 @@ module.exports = {
   ckeckTalkers,
   checkFieldsTalker,
   checkRateQueryParams,
+  checkDateQueryParams,
 };
