@@ -7,6 +7,7 @@ const router = express.Router();
 
 const INTERNAL_SERVER_ERROR = 500;
 const HTTP_OK_STATUS = 200;
+const NO_CONTENT = 204;
 const CREATED = 201;
 
 // 1 - Endpoint GET /talker que retorna um array com todas as pessoas palestrantes cadastradas.
@@ -62,6 +63,19 @@ router.put('/:id', authentication, ckeckTalkers, checkFieldsTalker, async (req, 
     talkers[index] = { id: Number(id), name, age, talk };
     await writeFile(talkers);
     res.status(HTTP_OK_STATUS).json(talkers[index]);
+  } catch (err) {
+    res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+  }
+});
+
+// 7 - Endpoint DELETE /talker/:id
+router.delete('/:id', authentication, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const talkers = await readFile();
+    const filteredTalkers = talkers.filter((talker) => talker.id !== Number(id));
+    await writeFile(filteredTalkers);
+    res.status(NO_CONTENT).end();
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
   }
