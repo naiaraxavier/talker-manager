@@ -10,11 +10,21 @@ const HTTP_OK_STATUS = 200;
 const NO_CONTENT = 204;
 const CREATED = 201;
 
-// 1 - Endpoint GET /talker que retorna um array com todas as pessoas palestrantes cadastradas.
-router.get('/', async (_req, res) => {
+// 8 - Endpoint GET /talker/search com parãmetro de consulta q=searchTerm
+// Ordem de rotas: rotas específicas -> rotas genéricas
+router.get('/search', authentication, async (req, res) => {
   try {
+    const { q } = req.query;
     const talkers = await readFile();
-    res.json(talkers);
+  
+  if (q) {
+    const filteredTalkers = talkers.filter(({ name }) => name.includes(q));
+    return res.status(HTTP_OK_STATUS).json(filteredTalkers);
+  }
+  if (!q) {
+    return res.status(HTTP_OK_STATUS).json(talkers);
+  }
+  res.status(HTTP_OK_STATUS).end();
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
   }
@@ -26,6 +36,16 @@ router.get('/:id', ckeckTalkers, async (req, res) => {
     const talkers = await readFile();
     const talker = talkers.find(({ id }) => id === Number(req.params.id));
     res.json(talker);
+  } catch (err) {
+    res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+  }
+});
+
+// 1 - Endpoint GET /talker que retorna um array com todas as pessoas palestrantes cadastradas.
+router.get('/', async (_req, res) => {
+  try {
+    const talkers = await readFile();
+    res.json(talkers);
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
   }
