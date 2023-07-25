@@ -8,6 +8,7 @@ const {
   checkDateQueryParams,
 } = require('../middlewares/checkTalker');
 const authentication = require('../middlewares/authentication');
+const talkersDB = require('../db/talkersDB');
 
 const router = express.Router();
 
@@ -48,6 +49,24 @@ router.patch('/rate/:id', authentication, ckeckTalkers, checkRateUpdate, async (
     res.status(NO_CONTENT).end();
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).json({ message: err.message });
+  }
+});
+
+// 12 - Endpoint GET /talker/db que retorna um array com todas as pessoas palestrantes cadastradas no banco de dados.
+router.get('/db', async (_req, res) => {
+  try {
+    const [result] = await talkersDB.findAll();
+    const objResult = result.map((talker) => ({
+        name: talker.name,
+        age: talker.age,
+        id: talker.id,
+        talk: {
+          watchedAt: talker.talk_watched_at, rate: talker.talk_rate },
+      }));
+    res.status(HTTP_OK_STATUS).json(objResult);
+  } catch (err) {
+    console.log(err);
+    res.status(INTERNAL_SERVER_ERROR).json({ message: err.sqlMessage });
   }
 });
 
