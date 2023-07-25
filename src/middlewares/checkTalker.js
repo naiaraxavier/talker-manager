@@ -56,11 +56,23 @@ const checkWatchedAt = (req, res, next) => {
 
 // validação se avaliação foi enviada corretamente
 const checkRate = (req, res, next) => {
-  const { talk } = req.body;
-  const { rate } = talk;
-  const validateRate = rate >= 1 && rate <= 5;
+  const { talk: { rate } } = req.body;
+  const validateRate = Number.isInteger(rate) && rate >= 1 && rate <= 5;
   if (rate === undefined) res.status(BAD_REQUEST).json({ message: 'O campo "rate" é obrigatório' });
-  if (!Number.isInteger(rate) || !validateRate) {
+  if (!validateRate) {
+    return res.status(BAD_REQUEST).json({
+      message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
+    });
+  }
+  next();
+};
+
+// validação se o update de avaliação foi enviada corretamente
+const checkRateUpdate = (req, res, next) => {
+  const { rate } = req.body;
+  const validateRate = Number.isInteger(rate) && rate >= 1 && rate <= 5;
+  if (rate === undefined) res.status(BAD_REQUEST).json({ message: 'O campo "rate" é obrigatório' });
+  if (!validateRate) {
     return res.status(BAD_REQUEST).json({
       message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
     });
@@ -83,6 +95,7 @@ const checkRateQueryParams = (req, res, next) => {
   next();
 };
 
+// Validação do QueryParams date
 const checkDateQueryParams = (req, res, next) => {
   const { date } = req.query;
     if (date && !isValidDate(date)) {
@@ -102,6 +115,7 @@ const checkFieldsTalker = [
 ];
 
 module.exports = {
+  checkRateUpdate,
   ckeckTalkers,
   checkFieldsTalker,
   checkRateQueryParams,

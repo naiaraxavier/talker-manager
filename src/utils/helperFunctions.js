@@ -45,10 +45,29 @@ const isValidDate = (date) => {
   return isValid;
 };
 
+// Função que atualiza rate(avaliação) dos talkers(palestrantes)
+const updateRateTalkers = async (id, updateTalker) => {
+  try {
+    const oldTalkers = await readFile();
+    const updatedTalkers = oldTalkers.map((talker) => {
+      if (talker.id === Number(id)) {
+        return { ...talker, talk: { ...talker.talk, rate: updateTalker.rate } };
+      }
+      return talker;
+    });
+    await writeFile(updatedTalkers);
+    console.log(`Talker com ${id} foi atualizado`);
+  } catch (err) {
+    console.error(err.message);
+    return err.message;
+  }
+};
+
 module.exports = {
   readFile,
   writeFile,
   generateToken,
   isValidEmail,
   isValidDate,
+  updateRateTalkers,
 };

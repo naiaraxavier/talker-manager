@@ -1,7 +1,8 @@
 const express = require('express');
-const { readFile, writeFile } = require('../utils/helperFunctions');
+const { readFile, writeFile, updateRateTalkers } = require('../utils/helperFunctions');
 const {
   ckeckTalkers,
+  checkRateUpdate,
   checkFieldsTalker,
   checkRateQueryParams,
   checkDateQueryParams,
@@ -15,8 +16,9 @@ const HTTP_OK_STATUS = 200;
 const NO_CONTENT = 204;
 const CREATED = 201;
 
-// 8 - Endpoint GET /talker/search com parãmetro de consulta q=searchTerm
-// 9 - Endpoint GET /talker/search com parãmetro de consulta rate=rateNumber
+// 8 - Endpoint GET /talker/search com parâmetro de consulta q=searchTerm
+// 9 - Endpoint GET /talker/search com parâmetro de consulta rate=rateNumber
+// 10 - Endpoint GET /talker/search com parâmetro de consulta date=watchedDate
 // Ordem de rotas: rotas específicas -> rotas genéricas
 router.get('/search',
   authentication,
@@ -35,6 +37,17 @@ router.get('/search',
     return res.json(talkers);
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+  }
+});
+
+// 11 - Endpoint PATCH /talker/rate/:id que atualiza a avaliação do palestrante pelo id dele
+router.patch('/rate/:id', authentication, ckeckTalkers, checkRateUpdate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await updateRateTalkers(id, req.body);
+    res.status(NO_CONTENT).end();
+  } catch (err) {
+    res.status(INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 });
 
